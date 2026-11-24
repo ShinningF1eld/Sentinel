@@ -1,0 +1,7 @@
+services:
+  api:
+    environment:
+      CLEANUP_MODULE: healthy
+      PYTHONPATH: /control
+    volumes:
+      - ./spike/healthy.py:/control/healthy.py:ro

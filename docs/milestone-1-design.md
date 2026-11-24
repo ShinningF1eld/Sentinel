@@ -1,10 +1,10 @@
 # Milestone 1 · Demonstrate the connection-pool incident
 
-**Status** Draft for review · **Revision** 0.1 · **Inspected** 2026-11-24
+**Status** Implemented and verified 2026-11-24 · **Design revision** 0.1
 
 **Decision at exit.** Can a developer repeatedly start from a known fixture, trigger exceptions, and show that a subsequent ordinary request times out acquiring a database connection only on the incident configuration? Passing M1 requires both the paired observations and evidence that the reset works. The output is a manually runnable local experiment and its recorded results.
 
-The workspace contains the project design and roadmap. Implementation and trial evidence are pending. The workload, symptom, checkpoint ordering, Python stack, PostgreSQL fixture, and local Compose environment come from the confirmed project design. The interfaces, starting values, and ten-trial allocation below are proposed implementation choices. [Project design, revision 0.14](design.md) · [Master roadmap, M1](master-roadmap.md#m1--demonstrate-the-incident-under-controlled-conditions)
+The workload, symptom, checkpoint ordering, Python stack, PostgreSQL fixture, and local Compose environment come from the confirmed project design. The interfaces, starting values, and ten-trial allocation below describe the design for the spike. [Project design, revision 0.14](design.md) · [Master roadmap, M1](master-roadmap.md#m1--demonstrate-the-incident-under-controlled-conditions) · [Measured results](milestone-1-results.md)
 
 ## Experiment and fixture
 
@@ -77,7 +77,7 @@ The final request defines the symptom. The independent post-batch reading suppli
 
 ## Acceptance criteria and roadmap traceability
 
-Run the following checks against the implemented spike. All are pending.
+The following checks define acceptance for the implemented spike. The [measured results](milestone-1-results.md) link to the trial and failure-check records.
 
 | ID | Roadmap M1 obligation | Observable pass criterion |
 |---|---|---|
@@ -95,4 +95,4 @@ Run the following checks against the implemented spike. All are pending.
 3. Implement trial setup, capture, teardown, and summary. Run the calibration pair, freeze the inputs, then execute and assess the ten-trial series.
 4. Hand M2 the runnable incident app, event fields, checkpoint semantics, frozen settings, and one reviewed trace from each variant. M3 inherits the fresh-state procedure, exact workload, predicate, and invalid-trial examples. The ten-run series remains M1 feasibility evidence. M3’s investigation baseline uses one healthy run and one incident run.
 
-**Decision record, 2026-11-24.** Revision 0.1 proposes five pairs as the allocation of ten total trials, sequential triggers, the initial numeric settings, and the operator interfaces above. This draft awaits review. Final fixture values and available Docker capacity are empirical inputs to record during calibration. Feasibility and repeatability remain unmeasured.
+**Decision record, 2026-11-24.** The implementation used five acceptance pairs, sequential triggers, and the proposed settings after a clean calibration pair. The results record the tested host resources and trial measurements.

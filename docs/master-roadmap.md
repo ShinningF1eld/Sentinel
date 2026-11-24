@@ -2,11 +2,13 @@
 
 **MVP finish line — M6.** An engineer can run one local Python CLI command against the connection-pool demo, inspect the resulting Markdown report, and independently reproduce the controller’s verdict from saved JSON with zero model calls.
 
-This plan follows [design revision 0.14](design.md). The confirmed MVP decisions govern M1–M6. M7–M10 organize the design’s proposed follow-on work. All milestones are pending. Each milestone uses the preceding milestone’s deliverable and retains its acceptance checks.
+This plan follows [design revision 0.14](design.md). The confirmed MVP decisions govern M1–M6. M7–M10 organize the design’s proposed follow-on work. M1 passed on 2026-11-24. M2–M10 are pending. Each milestone uses the preceding milestone’s deliverable and retains its acceptance checks.
 
 The design allows 8–12 weeks for a solo build. Use the first 2–3 working days for M1, aim for M2–M3 by the end of week 2, and target M4–M6 in weeks 3–4. Re-estimate the remaining work from measured setup time, local Docker capacity, and weekly availability.
 
 ## M1 · Demonstrate the incident under controlled conditions
+
+**Status** Passed. [Measured results](milestone-1-results.md)
 
 **Deliverable.** A Python demo API, PostgreSQL fixture, and workload driver that an engineer can run manually with Docker Compose. Calibrate pool size, exception batch size, and acquisition timeout here. Save the configuration, commands, and observations from the spike.
 

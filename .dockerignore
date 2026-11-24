@@ -1,0 +1,4 @@
+**
+!demo/
+!demo/*.py
+!requirements.txt

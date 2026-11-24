@@ -1,0 +1,8 @@
+{
+  "pool_capacity": 2,
+  "trigger_count": 2,
+  "acquisition_timeout_ms": 500,
+  "request_timeout_seconds": 5,
+  "drain_timeout_seconds": 5,
+  "readiness_timeout_seconds": 60
+}

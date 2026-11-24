@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:17.5-bookworm@sha256:fbcea1bd13b6a882cd6caa6b58db3ae5c102efe50ec625b3e2a5cbc50db5bfe4
+    environment:
+      POSTGRES_DB: sentinel
+      POSTGRES_USER: sentinel
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - data:/var/lib/postgresql/data
+      - ./spike/fixture.sql:/docker-entrypoint-initdb.d/01-fixture.sql:ro
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "127.0.0.1", "-U", "sentinel", "-d", "sentinel"]
+      interval: 1s
+      timeout: 2s
+      retries: 30
+    cpus: 1
+    mem_limit: 512m
+    pids_limit: 128
+  api:
+    image: sentinel-m1-api:local
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGHOST: db
+      PGDATABASE: sentinel
+      PGUSER: sentinel
+      PGCONNECT_TIMEOUT: "3"
+      POOL_CAPACITY: "${M1_POOL_CAPACITY:-2}"
+      ACQUISITION_TIMEOUT_MS: "${M1_ACQUISITION_TIMEOUT_MS:-500}"
+    ports:
+      - "127.0.0.1::8000"
+    cpus: 1
+    mem_limit: 256m
+    pids_limit: 64
+    security_opt:
+      - no-new-privileges:true
+volumes:
+  data:
