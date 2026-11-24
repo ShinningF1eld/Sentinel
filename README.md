@@ -33,4 +33,4 @@ The incident app supplies `GET /ordinary`, `POST /trigger`, `GET /ready`, and `G
 
 If teardown is unverified, use the project name recorded in the attempt's `config.json` and inspect the owned resources in `trial.json`. Run the recorded teardown command for that project and verify that its labeled resources are gone before starting another attempt.
 
-[Milestone 1 design](docs/milestone-1-design.md) · [Measured results](docs/milestone-1-results.md) · [Roadmap](docs/master-roadmap.md)
+[Milestone 1 design](docs/design/milestone-1-design.md) · [Measured results](docs/milestone-1-results.md) · [Roadmap](docs/master-roadmap.md)

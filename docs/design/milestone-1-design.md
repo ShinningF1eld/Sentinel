@@ -4,7 +4,7 @@
 
 **Decision at exit.** Can a developer repeatedly start from a known fixture, trigger exceptions, and show that a subsequent ordinary request times out acquiring a database connection only on the incident configuration? Passing M1 requires both the paired observations and evidence that the reset works. The output is a manually runnable local experiment and its recorded results.
 
-The workload, symptom, checkpoint ordering, Python stack, PostgreSQL fixture, and local Compose environment come from the confirmed project design. The interfaces, starting values, and ten-trial allocation below describe the design for the spike. [Project design, revision 0.14](design.md) · [Master roadmap, M1](master-roadmap.md#m1--demonstrate-the-incident-under-controlled-conditions) · [Measured results](milestone-1-results.md)
+The workload, symptom, checkpoint ordering, Python stack, PostgreSQL fixture, and local Compose environment come from the confirmed project design. The interfaces, starting values, and ten-trial allocation below describe the design for the spike. [Project design, revision 0.14](../design.md) · [Master roadmap, M1](../master-roadmap.md#m1--demonstrate-the-incident-under-controlled-conditions) · [Measured results](../milestone-1-results.md)
 
 ## Experiment and fixture
 
@@ -77,7 +77,7 @@ The final request defines the symptom. The independent post-batch reading suppli
 
 ## Acceptance criteria and roadmap traceability
 
-The following checks define acceptance for the implemented spike. The [measured results](milestone-1-results.md) link to the trial and failure-check records.
+The following checks define acceptance for the implemented spike. The [measured results](../milestone-1-results.md) link to the trial and failure-check records.
 
 | ID | Roadmap M1 obligation | Observable pass criterion |
 |---|---|---|

@@ -8,6 +8,8 @@ The design allows 8–12 weeks for a solo build. Use the first 2–3 working day
 
 ## M1 · Demonstrate the incident under controlled conditions
 
+[Milestone 1 design](design/milestone-1-design.md)
+
 **Status** Passed. [Measured results](milestone-1-results.md)
 
 **Deliverable.** A Python demo API, PostgreSQL fixture, and workload driver that an engineer can run manually with Docker Compose. Calibrate pool size, exception batch size, and acquisition timeout here. Save the configuration, commands, and observations from the spike.
@@ -20,6 +22,8 @@ The design allows 8–12 weeks for a solo build. Use the first 2–3 working day
 
 ## M2 · Capture citable evidence from the observed app
 
+[Milestone 2 design](design/milestone-2-design.md)
+
 **Deliverable.** Use the running M1 demo as the observed instance. At investigation start, save its windowed telemetry in a new local run directory. Expose the corresponding incident source revision to the investigator through a scoped, read-only tool.
 
 **Exit criteria**
@@ -29,6 +33,8 @@ The design allows 8–12 weeks for a solo build. Use the first 2–3 working day
 - Source inspection works from investigation start. Tests confirm that healthy-control diffs, fixture labels, hidden fixes, and evaluator files are outside the tool’s scope.
 
 ## M3 · Automate the healthy and incident baseline gate
+
+[Milestone 3 design](design/milestone-3-design.md)
 
 **Deliverable.** A Python controller and trusted local Compose runner use M1’s workload and M2’s evidence format to establish whether an investigation may proceed. A replay manifest identifies the source revision, dependency and image pins, fixtures, configuration, workload, readiness checks, and fidelity gaps.
 
@@ -40,6 +46,8 @@ The design allows 8–12 weeks for a solo build. Use the first 2–3 working day
 
 ## M4 · Review model feasibility against a recorded baseline
 
+[Milestone 4 design](design/milestone-4-design.md)
+
 **Deliverable.** Give three fresh Groq `openai/gpt-oss-120b` sessions the same M3 incident evidence and tool definitions. Use the free tier within the confirmed $0 model budget. Return relevant excerpts and checkpoint measurements through tools and retain full logs locally.
 
 **Exit criteria**
@@ -48,6 +56,8 @@ The design allows 8–12 weeks for a solo build. Use the first 2–3 working day
 - Record all three outcomes and a decision on whether to proceed or revise the contract before building the full loop. The design sets no required pass count. Preserve the evidence for any revision and repeat the check if the contract changes.
 
 ## M5 · Execute and score bounded experiments
+
+[Milestone 5 design](design/milestone-5-design.md)
 
 **Deliverable.** Connect the reviewed M4 proposal contract to the M3 runner. The investigator states competing mechanisms, cites evidence for each, and predicts what would support or contradict each one. Scenario code defines the allowed measurements, checkpoints, comparisons, and trial-validity rules.
 
@@ -59,6 +69,8 @@ The design allows 8–12 weeks for a solo build. Use the first 2–3 working day
 - Each started intervention, including an invalid trial, consumes one of three slots after the baseline pair. Stop early when a valid trial matches one candidate and conflicts with every remaining alternative. Record support only under the tested conditions. At the cap, record budget exhaustion and retain unresolved alternatives.
 
 ## M6 · Deliver the local CLI and auditable report
+
+[Milestone 6 design](design/milestone-6-design.md)
 
 **Deliverable.** One command runs M2–M5 end to end. Each investigation directory contains baseline observations, proposals, frozen predictions, trial measurements, controller verdicts, and a Markdown report. Only the controller writes verdicts.
 
