@@ -2,7 +2,7 @@
 
 **MVP finish line — M6.** An engineer can run one local Python CLI command against the connection-pool demo, inspect the resulting Markdown report, and independently reproduce the controller’s verdict from saved JSON with zero model calls.
 
-This plan follows [design revision 0.14](design.md). The confirmed MVP decisions govern M1–M6. M7–M10 organize the design’s proposed follow-on work. M1 and M2 passed on 2026-11-24. M3–M10 are pending. Each milestone uses the preceding milestone’s deliverable and retains its acceptance checks.
+This plan follows [design revision 0.14](design.md). The confirmed MVP decisions govern M1–M6. M7–M10 organize the design’s proposed follow-on work. M1 through M3 passed on 2026-11-24. M4–M10 are pending. Each milestone uses the preceding milestone’s deliverable and retains its acceptance checks.
 
 The design allows 8–12 weeks for a solo build. Use the first 2–3 working days for M1, aim for M2–M3 by the end of week 2, and target M4–M6 in weeks 3–4. Re-estimate the remaining work from measured setup time, local Docker capacity, and weekly availability.
 
@@ -37,6 +37,8 @@ The design allows 8–12 weeks for a solo build. Use the first 2–3 working day
 ## M3 · Automate the healthy and incident baseline gate
 
 [Milestone 3 design](design/milestone-3-design.md)
+
+**Status** Passed. [Acceptance results and handoff contract](milestone-3-results.md)
 
 **Deliverable.** A Python controller and trusted local Compose runner use M1’s workload and M2’s evidence format to establish whether an investigation may proceed. A replay manifest identifies the source revision, dependency and image pins, fixtures, configuration, workload, readiness checks, and fidelity gaps.
 

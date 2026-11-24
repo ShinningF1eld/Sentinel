@@ -1,6 +1,6 @@
 # Milestone 3 · Gate investigations on paired baselines
 
-**Draft 0.1 · 2026-11-24 · Acceptance pending.** The project confirms a healthy/incident baseline pair, fresh local Compose environments, and zero interventions on gate failure. The manifest fields, gate record, and execution sequence below are proposed interfaces. [Project design](../design.md) · [M3 roadmap](../master-roadmap.md#m3--automate-the-healthy-and-incident-baseline-gate)
+**Design 0.1 · 2026-11-24 · Acceptance passed.** The project confirms a healthy/incident baseline pair, fresh local Compose environments, and zero interventions on gate failure. The implemented interfaces and measured outcomes are recorded in the results. [Project design](../design.md) · [M3 roadmap](../master-roadmap.md#m3--automate-the-healthy-and-incident-baseline-gate) · [M3 results](../milestone-3-results.md)
 
 ## Starting point and inputs
 

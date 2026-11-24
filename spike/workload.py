@@ -33,7 +33,10 @@ def write_json(path, data):
 
 
 def load_config(path):
-    config = json.loads(Path(path).read_text(encoding="utf-8-sig"))
+    return validate_config(json.loads(Path(path).read_text(encoding="utf-8-sig")))
+
+
+def validate_config(config):
     keys = {
         "pool_capacity", "trigger_count", "acquisition_timeout_ms",
         "request_timeout_seconds", "drain_timeout_seconds", "readiness_timeout_seconds",
@@ -49,11 +52,12 @@ def load_config(path):
 
 
 class Workload:
-    def __init__(self, base_url, config, directory, record_command):
+    def __init__(self, base_url, config, directory, record_command, transport=None):
         self.base_url = base_url
         self.config = config
         self.directory = directory
         self.record_command = record_command
+        self.transport = transport
         self.opener = build_opener(ProxyHandler({}))
         self.data = {"requests": [], "checkpoints": {}, "snapshots": [], "readiness_attempts": []}
         self.save()
@@ -71,13 +75,16 @@ class Workload:
         result = {"method": method, "url": url, "sent_at": utc()}
         start = monotonic()
         try:
-            try:
-                response = self.opener.open(Request(url, headers=headers, method=method), timeout=timeout)
-            except HTTPError as error:
-                response = error
-            with response:
-                result["http_status"] = response.status
-                result["raw_body"] = response.read().decode("utf-8", errors="replace")
+            if self.transport:
+                result["http_status"], result["raw_body"] = self.transport(method, path, timeout, request_id)
+            else:
+                try:
+                    response = self.opener.open(Request(url, headers=headers, method=method), timeout=timeout)
+                except HTTPError as error:
+                    response = error
+                with response:
+                    result["http_status"] = response.status
+                    result["raw_body"] = response.read().decode("utf-8", errors="replace")
             result["body"] = json.loads(result["raw_body"])
         except (OSError, URLError, ValueError) as error:
             result["client_error"] = f"{type(error).__name__}: {error}"

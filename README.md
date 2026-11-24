@@ -46,4 +46,19 @@ python -m sentinel.evidence resolve artifacts/m2/investigation-01 $sentinelObser
 
 Use timezone-aware bounds such as `2026-11-24T10:00:00Z`. `since` is inclusive and `until` is exclusive. The output directory must be new. Choose an observation ID from `index.json`. The inspection commands read the saved capture and can run after the observed API stops. A failed capture leaves its available evidence and error in the investigation directory. [Evidence contract and verification](docs/milestone-2-results.md)
 
+## Run and read the baseline gate
+
+Use a complete M2 investigation with a nonempty observation window and the matching incident sources. Stage the two M1 images first. M3 uses the default local Linux Docker endpoint and an Engine that supports the isolated bridge gateway mode. The operator prepares and reviews the replay manifest before running the gate.
+
+```powershell
+$sentinelInvestigation = 'artifacts/m2/investigation-01'
+$sentinelManifest = 'artifacts/replay-01.json'
+python -m sentinel.baseline prepare $sentinelInvestigation $sentinelManifest
+python -m sentinel.baseline run $sentinelInvestigation $sentinelManifest
+python -m sentinel.baseline read $sentinelInvestigation
+python -m sentinel.baseline investigator $sentinelInvestigation
+```
+
+Run performs one baseline attempt per investigation and exits with status 0 when the gate opens. Read verifies the saved decision offline. The investigator command prints the gate status, incident checkpoints and events, and a healthy outcome summary. For another attempt, use a fresh investigation directory. [M3 results and handoff contract](docs/milestone-3-results.md)
+
 [Milestone 1 design](docs/design/milestone-1-design.md) · [Measured results](docs/milestone-1-results.md) · [Roadmap](docs/master-roadmap.md)
