@@ -33,4 +33,17 @@ The incident app supplies `GET /ordinary`, `POST /trigger`, `GET /ready`, and `G
 
 If teardown is unverified, use the project name recorded in the attempt's `config.json` and inspect the owned resources in `trial.json`. Run the recorded teardown command for that project and verify that its labeled resources are gone before starting another attempt.
 
+## Capture and cite historical evidence
+
+Run the incident API from a clean checkout of the Git revision you want to investigate. Supply its origin, a historical UTC interval, and the revision used to build the running image. Set `$sentinelBoot` to the boot ID from `/ready` to pin the observed process. `--repo` selects the local Git repository and defaults to the current directory.
+
+```powershell
+python -m sentinel.evidence capture --url $sentinelOrigin --since $sentinelSince --until $sentinelUntil --boot-id $sentinelBoot --revision $sentinelRevision --output artifacts/m2/investigation-01
+python -m sentinel.evidence list-source artifacts/m2/investigation-01
+python -m sentinel.evidence read-source artifacts/m2/investigation-01 demo/incident.py 1 2
+python -m sentinel.evidence resolve artifacts/m2/investigation-01 $sentinelObservationId
+```
+
+Use timezone-aware bounds such as `2026-11-24T10:00:00Z`. `since` is inclusive and `until` is exclusive. The output directory must be new. Choose an observation ID from `index.json`. The inspection commands read the saved capture and can run after the observed API stops. A failed capture leaves its available evidence and error in the investigation directory. [Evidence contract and verification](docs/milestone-2-results.md)
+
 [Milestone 1 design](docs/design/milestone-1-design.md) · [Measured results](docs/milestone-1-results.md) · [Roadmap](docs/master-roadmap.md)

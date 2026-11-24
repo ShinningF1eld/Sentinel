@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from collections import deque
 from datetime import datetime, timezone
 from hashlib import sha256
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -8,9 +9,15 @@ from importlib import import_module
 from pathlib import Path
 from threading import Lock
 from time import perf_counter
+from urllib.parse import parse_qs
 from uuid import uuid4
 
 from psycopg_pool import ConnectionPool, PoolTimeout
+
+from demo.telemetry import SCHEMA_VERSION, parse_timestamp
+
+
+TELEMETRY_LIMIT = 1024
 
 
 class DesignatedException(Exception):
@@ -18,7 +25,9 @@ class DesignatedException(Exception):
 
 
 class Demo:
-    def __init__(self, pool, cleanup):
+    def __init__(self, pool, cleanup, telemetry_limit=TELEMETRY_LIMIT):
+        if telemetry_limit < 1:
+            raise ValueError("telemetry limit must be positive")
         self.pool = pool
         self.on_exception = cleanup.on_designated_exception
         self.source_hashes = {
@@ -32,6 +41,11 @@ class Demo:
         self.retained = []
         self.events = []
         self.sequence = 0
+        self.process_started_at = datetime.now(timezone.utc).isoformat()
+        self.telemetry_limit = telemetry_limit
+        self.history = deque()
+        self.dropped_records = 0
+        self.latest_evicted_at = None
         with pool.connection() as connection:
             rows = connection.execute("SELECT id, value, version, instance FROM fixture").fetchall()
         if len(rows) != 1 or rows[0][:3] != (1, "ready", 1) or not rows[0][3]:
@@ -45,7 +59,58 @@ class Demo:
         return {"sequence": self.sequence, "timestamp": datetime.now(timezone.utc).isoformat()}
 
     def event(self, kind, request_id, **fields):
-        self.events.append({**self.stamp(), "kind": kind, "request_id": request_id, **fields})
+        stamp = self.stamp()
+        event = {**stamp, "kind": kind, "request_id": request_id, **fields}
+        self.events.append(event)
+        self.record_sample(self.sample(stamp, kind), event)
+
+    def sample(self, stamp, kind):
+        return {**stamp, "kind": kind, "active_requests": self.active,
+                "checked_out": len(self.checked_out)}
+
+    def record_sample(self, sample, event=None):
+        # Callers hold the workload lock. Evict the event and its sample together.
+        if len(self.history) == self.telemetry_limit:
+            evicted, paired = self.history.popleft()
+            timestamp = evicted["timestamp"]
+            self.latest_evicted_at = max(self.latest_evicted_at or timestamp, timestamp)
+            self.dropped_records += 1 + (paired is not None)
+        self.history.append((sample, event))
+
+    def telemetry(self, since, until):
+        with self.lock:
+            observed_at = datetime.now(timezone.utc).isoformat()
+            startup = since < until and since < parse_timestamp(self.process_started_at)
+            # A watermark is conservative when the clock moves backwards or timestamps tie.
+            eviction = (since < until and self.latest_evicted_at is not None
+                        and since <= parse_timestamp(self.latest_evicted_at))
+            future = since < until and until > parse_timestamp(observed_at)
+            events, samples = [], []
+            for sample, event in self.history:
+                if since <= parse_timestamp(sample["timestamp"]) < until:
+                    samples.append(sample)
+                    if event is not None:
+                        events.append(event)
+            return {
+                "schema_version": SCHEMA_VERSION,
+                "boot_id": self.boot_id,
+                "source_hashes": self.source_hashes,
+                "interval": {"since": since.isoformat(), "until": until.isoformat()},
+                "events": events,
+                "samples": samples,
+                "coverage": {
+                    "complete": not (startup or eviction or future),
+                    "startup_truncated": startup,
+                    "eviction_truncated": eviction,
+                    "future_truncated": future,
+                    "process_started_at": self.process_started_at,
+                    "observed_at": observed_at,
+                    "oldest_retained_at": self.history[0][0]["timestamp"] if self.history else None,
+                    "latest_evicted_at": self.latest_evicted_at,
+                    "retention_limit": self.telemetry_limit,
+                    "dropped_records": self.dropped_records,
+                },
+            }
 
     def readiness(self):
         return {
@@ -59,11 +124,11 @@ class Demo:
 
     def snapshot(self):
         with self.lock:
+            sample = self.sample(self.stamp(), "checkpoint")
+            self.record_sample(sample)
             return {
-                **self.stamp(),
+                **{key: value for key, value in sample.items() if key != "kind"},
                 "boot_id": self.boot_id,
-                "active_requests": self.active,
-                "checked_out": len(self.checked_out),
                 "events": list(self.events),
             }
 
@@ -158,6 +223,10 @@ def handler_for(app):
             self.wfile.write(body)
 
         def dispatch(self):
+            path, _, query = self.path.partition("?")
+            if self.command == "GET" and path == "/telemetry":
+                self.read_telemetry(query)
+                return
             if self.command == "GET" and self.path == "/ready":
                 self.respond(200, app.readiness())
                 return
@@ -173,6 +242,23 @@ def handler_for(app):
             request_id = self.headers.get("X-Request-ID") or str(uuid4())
             self.respond(*app.execute(request_id, operation))
 
+        def read_telemetry(self, query):
+            params = parse_qs(query, keep_blank_values=True)
+            bounds = {}
+            for field in ("since", "until"):
+                values = params.get(field, [])
+                try:
+                    if len(values) != 1:
+                        raise ValueError("supply exactly one timestamp")
+                    bounds[field] = parse_timestamp(values[0])
+                except ValueError as error:
+                    self.respond(400, {"field": field, "error": str(error)})
+                    return
+            if bounds["until"] < bounds["since"]:
+                self.respond(400, {"field": "until", "error": "must be at or after since"})
+                return
+            self.respond(200, app.telemetry(**bounds))
+
         do_GET = dispatch
         do_POST = dispatch
 
@@ -187,7 +273,7 @@ def main():
         min_size=size, max_size=size, timeout=timeout, kwargs={"autocommit": True}, open=False
     ) as pool:
         pool.wait(timeout=15)
-        app = Demo(pool, cleanup)
+        app = Demo(pool, cleanup, int(os.environ.get("TELEMETRY_LIMIT", TELEMETRY_LIMIT)))
         with ThreadingHTTPServer(("0.0.0.0", int(os.environ.get("PORT", "8000"))), handler_for(app)) as server:
             server.serve_forever()
 

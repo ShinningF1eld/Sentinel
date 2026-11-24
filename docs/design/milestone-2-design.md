@@ -1,6 +1,6 @@
 # Milestone 2 · Capture citable incident evidence
 
-**Draft 0.1 · 2026-11-24 · Acceptance pending.** The confirmed requirements are the read-only windowed endpoint, durable observation IDs, and read-only incident source access from investigation start. The wire format, window semantics, and citation syntax below are proposed. [Project design](../design.md) · [M2 roadmap](../master-roadmap.md#m2--capture-citable-evidence-from-the-observed-app)
+**Revision 0.1 · 2026-11-24 · Acceptance passed.** The confirmed requirements are the read-only windowed endpoint, durable observation IDs, and read-only incident source access from investigation start. [Implementation contract and acceptance results](../milestone-2-results.md) · [Project design](../design.md) · [M2 roadmap](../master-roadmap.md#m2--capture-citable-evidence-from-the-observed-app)
 
 ## Starting point and exit
 

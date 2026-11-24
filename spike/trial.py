@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SERVICES = ("api", "db")
 SOURCE_FILES = (
     ".dockerignore", "Dockerfile", "compose.yaml", "requirements.txt", "demo/app.py",
-    "demo/incident.py", "spike/fixture.sql", "spike/healthy.py", "spike/healthy.compose.yaml",
+    "demo/incident.py", "demo/telemetry.py", "spike/fixture.sql", "spike/healthy.py", "spike/healthy.compose.yaml",
     "spike/trial.py", "spike/workload.py", "spike/series.py",
 )
 
